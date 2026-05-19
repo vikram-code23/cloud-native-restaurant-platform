@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>VK Food App</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+<div class="particles">
+
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+
+</div>
+<div class="navbar">
+
+    <a href="index.html">Home</a>
+
+    <a href="menu.html">Menu</a>
+
+    <a href="login.html">Login</a>
+
+</div>
+
+<!-- HERO SECTION -->
+
+<div class="hero">
+
+    <img src="images/vk-brand.png" class="hero-img">
+
+    <div class="hero-content">
+
+        <h1>VIKRAM RESTAURANT</h1>
+
+        <p id="typing-text">
+Every Bite Feels Like Home ✨
+</p>
+
+<button onclick="goLogin()">
+    Start Ordering 🍽️
+</button>
+    </div>
+
+</div>
+<section class="reviews">
+
+    <h2>
+        1000+ Happy Customers ❤️
+    </h2>
+
+    <div class="review-grid">
+
+        <div class="review-card">
+
+            ⭐ ⭐ ⭐ ⭐ ⭐
+
+            <p>
+                "Best restaurant UI 🔥"
+            </p>
+
+        </div>
+
+        <div class="review-card">
+
+            ⭐ ⭐ ⭐ ⭐ ⭐
+
+            <p>
+                "Food ordering experience super 😭"
+            </p>
+
+        </div>
+
+        <div class="review-card">
+
+            ⭐ ⭐ ⭐ ⭐ ⭐
+
+            <p>
+                "Looks like real startup app 🚀"
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+<script>
+
+function goLogin(){
+
+    window.location.href =
+    "login.html";
+
+}
+
+</script>
+<script>
+
+const text =
+"Every Bite Feels Like Home ✨";
+
+let index = 0;
+
+function typeEffect(){
+
+    if(index < text.length){
+
+        document.getElementById(
+            "typingText"
+        ).innerHTML += text.charAt(index);
+
+        index++;
+
+        setTimeout(typeEffect,80);
+
+    }
+
+}
+
+typeEffect();
+
+</script>
+</body>
+</html>

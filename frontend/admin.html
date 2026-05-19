@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport"
+  content="width=device-width, initial-scale=1.0"/>
+
+  <title>VK Admin Dashboard</title>
+
+  <link rel="stylesheet" href="admin.css">
+
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+      <h2>VK ADMIN</h2>
+
+      <ul>
+
+          <li id="dashboardBtn">
+<i class="fa-solid fa-chart-line"></i>
+Dashboard
+</li>
+
+<li id="ordersBtn">
+<i class="fa-solid fa-burger"></i>
+Orders
+</li>
+
+<li id="revenueBtn">
+<i class="fa-solid fa-wallet"></i>
+Revenue
+</li>
+
+<li id="settingsBtn">
+<i class="fa-solid fa-gear"></i>
+Settings
+</li>
+
+      </ul>
+
+  </div>
+
+  <!-- MAIN -->
+
+  <div class="main">
+
+      <h1 class="title">
+        🍽 VK Restaurant Dashboard
+      </h1>
+
+ <!-- STATS -->
+
+<div class="stats" id="dashboardSection">
+
+    <div class="stat-card">
+
+        <h2 id="totalOrders">0</h2>
+
+        <p>Total Orders</p>
+
+    </div>
+
+    <div class="stat-card revenue-card">
+
+        <h2 id="totalRevenue">₹0</h2>
+
+        <p>Total Revenue</p>
+
+    </div>
+
+    <div class="stat-card pending-card">
+
+        <h2 id="pendingOrders">0</h2>
+
+        <p>Pending</p>
+
+    </div>
+
+    <div class="stat-card delivered-card">
+
+        <h2 id="deliveredOrders">0</h2>
+
+        <p>Delivered</p>
+
+    </div>
+
+</div>
+
+      <!-- ORDERS -->
+
+      <div id="ordersSection">
+
+    <h2 class="section-title">
+      Orders
+    </h2>
+
+    <div id="ordersContainer"></div>
+
+</div>
+
+  </div>
+
+  <script src="admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>

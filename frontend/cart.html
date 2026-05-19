@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>VK Cart</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <a href="menu.html">⬅ Back</a>
+
+    <a href="orders.html">📦 My Orders</a>
+
+</div>
+
+<div class="cart-page">
+
+    <div class="cart-box">
+
+        <h1>🛒 Your Cart</h1>
+
+        <div id="cartItems"></div>
+
+        <div class="cart-summary">
+
+            <h2 id="totalPrice">
+                Total: ₹0
+            </h2>
+
+<select id="paymentMethod">
+
+<option value="Cash">
+Cash 💵
+</option>
+
+<option value="UPI">
+UPI 📱
+</option>
+
+</select>
+
+<input
+type="text"
+id="tableNumber"
+placeholder="Enter Table Number"
+/>
+
+<button onclick="placeOrder()">
+Checkout 💳
+</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script src="./js/checkout.js"></script>
+
+<script>
+loadCart();
+</script>
+
+</body>
+
+</html>

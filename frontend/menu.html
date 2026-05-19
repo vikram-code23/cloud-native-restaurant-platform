@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+<a class="nav-btn" href="orders.html">
+    📦 My Orders
+</a>
+</div>
+
+<div class="brand-banner">
+    <img src="/vk-brand.png">
+</div>
+
+<!-- SEARCH -->
+<div class="search-box">
+    <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="🔍 Search food..." 
+        onkeyup="searchItems()"
+    >
+</div>
+
+<h1>🍽️ Menu</h1>
+
+<!-- CART -->
+<button class="cart-btn" onclick="viewCart()">🛒 Cart</button>
+
+<!-- BACK -->
+<button 
+    id="backBtn" 
+    class="back-btn" 
+    onclick="loadCategories()" 
+    style="display:none;"
+>
+⬅ Back
+</button>
+
+<div id="menu" class="container"></div>
+
+<script>
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let allItems = [];
+
+
+// 🔥 LOAD CATEGORIES
+async function loadCategories() {
+
+    document.getElementById("backBtn").style.display = "none";
+
+    let menuDiv = document.getElementById("menu");
+
+    menuDiv.innerHTML = "Loading...";
+
+    try {
+
+        // ✅ FIXED
+        let res = await fetch("/api/categories");;
+
+        let categories = await res.json();
+
+        menuDiv.innerHTML = "";
+        menuDiv.className = "container";
+
+        allItems = [];
+
+ for (let cat of categories) {
+
+    let categoryName = cat.name;
+
+    let r = await fetch(`/api/menu/${categoryName}`);
+
+    let items = await r.json();
+
+    allItems = allItems.concat(items);
+
+    let div = document.createElement("div");
+
+    div.className = "card";
+
+    div.innerHTML = `
+        <img src="/images/${categoryName.toLowerCase()}.jpg">
+
+        <div class="card-body">
+            <h3>${categoryName}</h3>
+        </div>
+    `;
+
+    div.addEventListener("click", (e) => {
+
+    // button click ignore
+    if(e.target.tagName === "BUTTON"){
+        return;
+    }
+
+    loadItems(categoryName);
+
+});
+
+    menuDiv.appendChild(div);
+}
+
+    } catch(error){
+
+        console.log(error);
+        menuDiv.innerHTML = "Failed to load categories";
+
+    }
+}
+
+
+// 🔥 LOAD ITEMS
+async function loadItems(category) {
+
+    document.getElementById("backBtn").style.display = "block";
+
+    let menuDiv = document.getElementById("menu");
+
+    try {
+
+        // ✅ FIXED
+        let res = await fetch(`/api/menu/${category}`);
+
+        let items = await res.json();
+
+        allItems = items;
+
+        menuDiv.className = "";
+        menuDiv.innerHTML = "";
+
+        let wrapper = document.createElement("div");
+        wrapper.className = "items-wrapper";
+
+        let title = document.createElement("h2");
+        title.innerText = "🍽️ " + category;
+        title.className = "category-title";
+
+        wrapper.appendChild(title);
+
+        let grid = document.createElement("div");
+        grid.className = "container";
+
+        items.forEach(item => {
+
+            let div = document.createElement("div");
+
+            div.className = "card";
+
+            div.innerHTML = `
+                <img src="/images/items/${item.image}">
+
+                <div class="card-body">
+                    <p class="tag">Best Seller ⭐</p>
+                    <h3>${item.name}</h3>
+                    <p>₹${item.price}</p>
+                    <button class="add-btn">Add to Cart</button>
+                </div>
+            `;
+
+div.querySelector(".add-btn").onclick = (e) => {
+
+    e.stopPropagation();
+
+    addToCart(item.name, item.price);
+
+};
+
+            grid.appendChild(div);
+
+        });
+
+        wrapper.appendChild(grid);
+        menuDiv.appendChild(wrapper);
+
+    } catch(error){
+
+        console.log(error);
+        menuDiv.innerHTML = "Failed to load menu";
+
+    }
+}
+
+
+// 🔥 SEARCH
+function searchItems() {
+
+    let input = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    let menuDiv = document.getElementById("menu");
+
+    if(input === ""){
+        loadCategories();
+        return;
+    }
+
+    let filtered = allItems.filter(item =>
+        item.name.toLowerCase().includes(input)
+    );
+
+    menuDiv.innerHTML = "";
+
+    let title = document.createElement("h2");
+    title.className = "category-title";
+    title.innerText = "Search Results";
+
+    menuDiv.appendChild(title);
+
+    let grid = document.createElement("div");
+    grid.className = "container";
+
+    filtered.forEach(item => {
+
+        let div = document.createElement("div");
+
+        div.className = "card";
+
+        div.innerHTML = `
+            <img src="/images/items/${item.image}">
+            <div class="card-body">
+                <h3>${item.name}</h3>
+                <p>₹${item.price}</p>
+                <button class="add-btn">Add to Cart</button>
+            </div>
+        `;
+
+ div.querySelector(".add-btn").onclick = (e) => {
+
+    e.stopPropagation();
+
+    addToCart(item.name, item.price);
+
+};
+
+        grid.appendChild(div);
+
+    });
+
+    menuDiv.appendChild(grid);
+
+}
+
+
+// 🔥 VIEW CART (UNCHANGED)
+window.viewCart = function () {
+    let menuDiv = document.getElementById("menu");
+    let total = 0;
+
+    let html = `
+
+<div class="premium-cart">
+
+<div class="premium-cart-header">
+
+<h1>🛒 Your Cart</h1>
+
+<p>Order smarter. Dine faster. 🍽️⚡</p>
+
+</div>
+
+`;
+
+if(cart.length === 0){
+
+html += `
+
+<div class="empty-cart">
+
+<h2>Cart Empty 😭</h2>
+
+<p>Add delicious items now</p>
+
+</div>
+
+`;
+
+}
+
+else{
+
+cart.forEach(item => {
+
+total += item.price * item.quantity;
+
+html += `
+
+<div class="premium-cart-item">
+
+<div class="premium-food-info">
+
+<h3>${item.name}</h3>
+
+<p>₹${item.price}</p>
+
+</div>
+
+<div class="premium-qty">
+
+<button onclick="decreaseQty('${item.name}')">−</button>
+
+<span>${item.quantity}</span>
+
+<button onclick="increaseQty('${item.name}')">+</button>
+
+</div>
+
+<button
+class="delete-btn"
+onclick="removeItem('${item.name}')"
+>
+❌
+</button>
+
+</div>
+
+`;
+
+});
+
+html += `
+
+<div class="premium-summary">
+
+<h2>Total: ₹${total}</h2>
+
+<select id="paymentMethod">
+
+<option value="Cash">
+Cash 💵
+</option>
+
+<option value="UPI">
+UPI 📱
+</option>
+
+<option value="Card">
+Card 💳
+</option>
+
+</select>
+
+<select id="tableNo">
+
+<option value="T1">
+Table 1
+</option>
+
+<option value="T2">
+Table 2
+</option>
+
+<option value="Family Hall">
+Family Hall
+</option>
+
+</select>
+
+<button class="checkout-btn"
+onclick="checkout()">
+
+Checkout 💳
+
+</button>
+
+</div>
+
+`;
+
+}
+
+html += `
+
+<button
+class="premium-back-btn"
+onclick="loadCategories()"
+>
+
+⬅ Back to Menu
+
+</button>
+
+</div>
+
+`;
+
+menuDiv.innerHTML = html;
+};
+
+
+// 🔥 ADD TO CART (UNCHANGED)
+function addToCart(name, price) {
+
+    let existing = cart.find(item => item.name === name);
+
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ name, price, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    showToast(name + " added to cart 🛒");
+}
+
+
+// qty + checkout (UNCHANGED LOGIC)
+window.increaseQty = function(name){
+    let item = cart.find(i => i.name === name);
+    item.quantity += 1;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    viewCart();
+}
+
+window.decreaseQty = function(name){
+    let item = cart.find(i => i.name === name);
+
+    if(item.quantity > 1){
+        item.quantity -= 1;
+    } else {
+        cart = cart.filter(i => i.name !== name);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    viewCart();
+}
+
+window.removeItem = function(name){
+    cart = cart.filter(i => i.name !== name);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    viewCart();
+}
+
+
+// toast
+function showToast(message) {
+
+    const toast =
+    document.getElementById("toast");
+
+    toast.innerHTML = message;
+
+    toast.classList.remove("show");
+
+    void toast.offsetWidth;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    },2500);
+
+}
+
+
+// 🔥 CHECKOUT (ONLY FIXED URL)
+function checkout() {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const tableNo = document.getElementById("tableNo").value;
+    const paymentMethod = document.getElementById("paymentMethod").value;
+
+    if (!cart.length) {
+        alert("Cart Empty 😄");
+        return;
+    }
+
+    // ✅ FIXED
+    fetch("/api/place-order", {
+
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+
+        body: JSON.stringify({
+            userId: user?.id,
+            tableNo,
+            paymentMethod,
+            orders: cart
+        })
+
+    })
+    .then(res => res.text())
+    .then(() => {
+        document.getElementById("successScreen").style.display = "flex";
+        localStorage.removeItem("cart");
+
+        setTimeout(() => {
+            window.location.href = "orders.html";
+        }, 4500);
+    })
+    .catch(err => {
+        console.log(err);
+        alert("Checkout Failed ❌");
+    });
+}
+
+
+// START
+loadCategories();
+
+</script>
+
+
+
+<div id="toast"></div>
+
+<!-- SUCCESS SCREEN (UNCHANGED) -->
+<div id="successScreen" style="display:none;">
+    <div class="success-overlay"></div>
+    <div class="floating-emojis">🍔 🍕 🍟 🌮 🍜</div>
+
+    <div class="success-animation">
+        <div class="ring"></div>
+        <div class="ring ring2"></div>
+
+        <div class="checkmark">✓</div>
+
+        <h1>ORDER CONFIRMED</h1>
+<p>
+Your food is being prepared 👨‍🍳🍽️<br><br>
+
+It’ll be at your table soon ✨  
+Enjoy your meal & happy dining ❤️
+</p>
+        <span>Thank you for ordering from VK Restaurant ❤️</span>
+    </div>
+</div>
+
+</body>
+</html>
