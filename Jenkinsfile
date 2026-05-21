@@ -19,7 +19,7 @@ pipeline {
 
             steps {
 
-                bat 'docker-compose down'
+                sh 'docker-compose down'
 
             }
 
@@ -29,7 +29,7 @@ pipeline {
 
             steps {
 
-                bat 'docker-compose up --build -d'
+                sh 'docker-compose up --build -d'
 
             }
 
@@ -39,7 +39,7 @@ pipeline {
 
             steps {
 
-                bat 'docker ps'
+                sh 'docker ps'
 
             }
 
