@@ -215,27 +215,35 @@ function searchItems() {
 
     let title = document.createElement("h2");
     title.className = "category-title";
-    title.innerText = "Search Results";
+    title.innerText = "🔍 Search Results";
 
     menuDiv.appendChild(title);
 
-    let grid = document.createElement("div");
-    grid.className = "container";
+let grid = document.createElement("div");
+grid.className = "search-grid";
 
     filtered.forEach(item => {
 
         let div = document.createElement("div");
 
-        div.className = "card";
+       div.className = "food-card";
+div.innerHTML = `
 
-        div.innerHTML = `
-            <img src="/images/items/${item.image}">
-            <div class="card-body">
-                <h3>${item.name}</h3>
-                <p>₹${item.price}</p>
-                <button class="add-btn">Add to Cart</button>
-            </div>
-        `;
+    <img src="/images/items/${item.image}" alt="${item.name}">
+
+    <div class="food-info">
+
+        <h3>${item.name}</h3>
+
+        <p>₹${item.price}</p>
+
+        <button class="add-btn">
+            Add to Cart
+        </button>
+
+    </div>
+
+`;
 
  div.querySelector(".add-btn").onclick = (e) => {
 

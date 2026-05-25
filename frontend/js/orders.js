@@ -1,9 +1,18 @@
+const socket = io("http://localhost:5000");
+
+socket.on("status-updated", () => {
+
+    loadOrders();
+
+});
+
 const user = JSON.parse(localStorage.getItem("user"));
 
 let allOrders = [];
 
 let previousOpened = false;
 let lastDelivered = null;
+
 async function loadOrders() {
 
     try{
@@ -24,28 +33,28 @@ async function loadOrders() {
 
             if (!map[key]) {
 
-  map[key] = {
+                map[key] = {
 
-    id: key,
+                    id: key,
 
-    rawTime: item.created_at,
+                    rawTime: item.created_at,
 
-    time:
-        item.created_at &&
-        item.created_at !== "NULL"
+                    time:
+                        item.created_at &&
+                        item.created_at !== "NULL"
 
-        ? new Date(item.created_at)
-          .toLocaleString()
+                        ? new Date(item.created_at)
+                        .toLocaleString()
 
-        : "Recently",
+                        : "Recently",
 
-    table: item.table_no || "-",
+                    table: item.table_no || "-",
 
-    status: item.status || "Pending",
+                    status: item.status || "Pending",
 
-    items: []
+                    items: []
 
-};
+                };
 
             }
 
@@ -60,12 +69,12 @@ async function loadOrders() {
         });
 
         // ✅ latest order first
-        
+
         allOrders = Object.values(map).sort((a, b) => {
 
-    return new Date(b.rawTime) - new Date(a.rawTime);
+            return new Date(b.rawTime) - new Date(a.rawTime);
 
-});
+        });
 
         renderPage();
 
@@ -114,62 +123,63 @@ function renderPage() {
         return;
     }
 
-// ✅ always latest order
+    // ✅ always latest order
 
-const latest = allOrders.find(
-    order => order.status !== "Delivered"
-);
-
-const deliveredOrder = allOrders.find(
-    order => order.status === "Delivered"
-);
-
-if(
-    deliveredOrder &&
-    deliveredOrder.id !== lastDelivered
-){
-
-    lastDelivered = deliveredOrder.id;
-
-    showToast(
-        "🎉 Order Delivered! Enjoy your meal ❤️"
+    const latest = allOrders.find(
+        order => order.status !== "Delivered"
     );
-}
-if(!latest){
 
-    container.innerHTML = `
+    const deliveredOrder = allOrders.find(
+        order => order.status === "Delivered"
+    );
 
-    <div class="live-order-card">
+    if(
+        deliveredOrder &&
+        deliveredOrder.id !== lastDelivered
+    ){
 
-        <div class="top-row">
+        lastDelivered = deliveredOrder.id;
 
-            <h2>🎉 All Orders Delivered</h2>
+        showToast(
+            "🎉 Order Delivered! Enjoy your meal ❤️"
+        );
+    }
 
-            <button class="history-btn"
-            onclick="showPrevious()">
+    if(!latest){
 
-                📜
+        container.innerHTML = `
 
-            </button>
+        <div class="live-order-card">
+
+            <div class="top-row">
+
+                <h2>🎉 All Orders Delivered</h2>
+
+                <button class="history-btn"
+                onclick="showPrevious()">
+
+                    📜
+
+                </button>
+
+            </div>
+
+            <p class="delivered-msg">
+                Enjoy your meal ❤️
+            </p>
 
         </div>
 
-        <p class="delivered-msg">
-            Enjoy your meal ❤️
-        </p>
+        `;
 
-    </div>
+        if(previousOpened){
 
-    `;
+            renderPrevious();
 
-    if(previousOpened){
+        }
 
-        renderPrevious();
-
+        return;
     }
-
-    return;
-}
 
     container.innerHTML = `
 
@@ -199,94 +209,96 @@ if(!latest){
 
         <div class="items">
 
-${latest.items.map(i => `
+            ${latest.items.map(i => `
 
-    <div class="item-row">
+                <div class="item-row">
 
-        <span>${i.name}</span>
+                    <span>${i.name}</span>
 
-        <span>x${i.qty}</span>
+                    <span>x${i.qty}</span>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+
+        <div class="status-track">
+
+            <div class="progress-bar">
+
+                <div class="progress-line"></div>
+
+                <div class="green-line"></div>
+
+                <div class="progress-fill"
+                style="width:${getProgressWidth(latest.status)}">
+                </div>
+
+                <div class="
+                step
+                ${latest.status === "Pending" ||
+                latest.status === "Preparing" ||
+                latest.status === "Ready" ||
+                latest.status === "Delivered"
+                ? "active" : ""}
+                ">
+
+                    <div class="step-circle">✓</div>
+
+                    <p>Confirmed</p>
+
+                </div>
+
+                <div class="
+                step
+                ${latest.status === "Preparing" ||
+                latest.status === "Ready" ||
+                latest.status === "Delivered"
+                ? "active" : ""}
+                ">
+
+                    <div class="step-circle">🍳</div>
+
+                    <p>Preparing</p>
+
+                </div>
+
+                <div class="
+                step
+                ${latest.status === "Ready" ||
+                latest.status === "Delivered"
+                ? "active" : ""}
+                ">
+
+                    <div class="step-circle">🛵</div>
+
+                    <p>Ready</p>
+
+                </div>
+
+                <div class="
+                step
+                ${latest.status === "Delivered"
+                ? "active" : ""}
+                ">
+
+                    <div class="step-circle">🎉</div>
+
+                    <p>Delivered</p>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-`).join("")}
-
-        </div>
-
-<div class="status-track">
-
-    <div class="progress-bar">
-
-        <div class="progress-line"></div>
-
-        <div class="progress-fill"
-        style="
-        width:${getProgressWidth(latest.status)}
-        ">
-        </div>
-
-        <div class="
-step
-${latest.status === "Pending" ||
-latest.status === "Preparing" ||
-latest.status === "Ready" ||
-latest.status === "Delivered"
-? "active" : ""}
-">
-
-            <div class="step-circle">✓</div>
-
-            <p>Confirmed</p>
-
-        </div>
-
-        <div class="
-step
-${latest.status === "Preparing" ||
-latest.status === "Ready" ||
-latest.status === "Delivered"
-? "active" : ""}
-">
-
-            <div class="step-circle">🍳</div>
-
-            <p>Preparing</p>
-
-        </div>
-
-        <div class="
-step
-${latest.status === "Ready" ||
-latest.status === "Delivered"
-? "active" : ""}
-">
-
-            <div class="step-circle">🛵</div>
-
-            <p>Ready</p>
-
-        </div>
-
-        <div class="
-step
-${latest.status === "Delivered"
-? "active" : ""}
-">
-
-            <div class="step-circle">🎉</div>
-
-            <p>Delivered</p>
-
-        </div>
-
-    </div>
-
-</div>
-
-    </div>
     `;
 
     // ✅ keep previous orders open after refresh
+
     if(previousOpened){
 
         renderPrevious();
@@ -303,15 +315,15 @@ function showPrevious() {
 
 function renderPrevious(){
 
-const previous = allOrders.filter(
-    order => order.status === "Delivered"
-);
+    const previous = allOrders.filter(
+        order => order.status === "Delivered"
+    );
 
-if(previous.length > 0){
+    if(previous.length > 0){
 
-    previous.shift();
+        previous.shift();
 
-}
+    }
 
     const container =
     document.getElementById("myOrders");
@@ -334,56 +346,56 @@ if(previous.length > 0){
         `;
     }
 
-previous.forEach((o,index) => {
+    previous.forEach((o,index) => {
 
-html += `
+        html += `
 
-<div class="prev-card">
+        <div class="prev-card">
 
-    <div class="prev-top">
+            <div class="prev-top">
 
-        <span class="order-id">
-            Order #${index + 101}
-        </span>
+                <span class="order-id">
+                    Order #${index + 101}
+                </span>
 
-        <span class="status-pill">
-            ${o.status}
-        </span>
-
-    </div>
-
-    <p class="prev-time">
-
-        🕒 ${o.time}
-
-    </p>
-
-    <p class="prev-table">
-
-        🪑 Table:
-        ${o.table}
-
-    </p>
-
-    <div class="prev-items">
-
-        ${o.items.map(i => `
-
-            <div class="prev-food">
-
-                <span>${i.name}</span>
-
-                <span>x${i.qty}</span>
+                <span class="status-pill">
+                    ${o.status}
+                </span>
 
             </div>
 
-        `).join("")}
+            <p class="prev-time">
 
-    </div>
+                🕒 ${o.time}
 
-</div>
-`;
-});
+            </p>
+
+            <p class="prev-table">
+
+                🪑 Table:
+                ${o.table}
+
+            </p>
+
+            <div class="prev-items">
+
+                ${o.items.map(i => `
+
+                    <div class="prev-food">
+
+                        <span>${i.name}</span>
+
+                        <span>x${i.qty}</span>
+
+                    </div>
+
+                `).join("")}
+
+            </div>
+
+        </div>
+        `;
+    });
 
     html += `
         </div>
@@ -393,11 +405,6 @@ html += `
     container.innerHTML += html;
 }
 
-setInterval(() => {
-
-    loadOrders();
-
-}, 5000);
 function showToast(message){
 
     const toast =
@@ -421,4 +428,5 @@ function showToast(message){
 
     },4000);
 }
+
 loadOrders();

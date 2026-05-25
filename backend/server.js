@@ -1,13 +1,18 @@
 const express = require("express");
 const cors = require("cors");
-
+const http = require("http");
+const { Server } = require("socket.io");
 require("dotenv").config();
 const db = require("./db");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+const server = http.createServer(app);
 
+const io = new Server(server, {
+    cors: { origin: "*" }
+});
 app.use((req, res, next) => {
 
     res.header(
@@ -240,6 +245,9 @@ app.post("/api/place-order", (req, res) => {
     });
 
     res.send("Order placed");
+    io.emit("new-order", {
+    message: "New order received"
+});
 
 });
 
@@ -389,7 +397,10 @@ app.put("/api/checkout-status/:checkoutId", (req, res) => {
                 return res.status(500).json(err);
 
             }
-
+            io.emit("status-updated", {
+            id: req.params.checkoutId,
+            status
+            });
             res.json({
                 message:"Checkout Status Updated"
             });
@@ -428,7 +439,9 @@ app.get("/api/categories", (req, res) => {
 
 });
 
-app.listen(PORT, () => {
+
+
+server.listen(PORT, () => {
 
     console.log(`Server running on port ${PORT}`);
 

@@ -1369,3 +1369,191 @@ body::after{
     }
 
 }
+
+/* SEARCH RESULTS */
+
+#searchResults{
+
+    width: 100%;
+    padding: 40px 60px;
+
+}
+
+.search-title{
+
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffb400;
+    margin-bottom: 40px;
+
+}
+
+.search-grid{
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+
+}
+
+.food-card{
+
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: 0.3s;
+    backdrop-filter: blur(10px);
+
+}
+
+.food-card:hover{
+
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(255,180,0,0.25);
+
+}
+
+.food-card img{
+
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+
+}
+
+.food-info{
+
+    padding: 20px;
+    text-align: center;
+
+}
+
+.food-info h3{
+
+    color: white;
+    font-size: 28px;
+    margin-bottom: 10px;
+
+}
+
+.food-info p{
+
+    color: #ffcc00;
+    font-size: 22px;
+    margin-bottom: 18px;
+
+}
+
+.food-info button{
+
+    background: #ffb400;
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+
+}
+
+.food-info button:hover{
+
+    background: white;
+
+}
+/* SEARCH RESULT GRID */
+
+.search-grid{
+
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px 40px 60px;
+
+}
+
+
+/* SEARCH FOOD CARD */
+
+.food-card{
+
+    background: rgba(255,255,255,0.05);
+    border-radius: 24px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.08);
+
+}
+
+
+.food-card:hover{
+
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(255,180,0,0.2);
+
+}
+
+
+.food-card img{
+
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+
+}
+
+
+/* FOOD INFO */
+
+.food-info{
+
+    padding: 20px;
+    text-align: center;
+
+}
+
+
+.food-info h3{
+
+    color: white;
+    font-size: 28px;
+    margin-bottom: 10px;
+
+}
+
+
+.food-info p{
+
+    color: #ffcc00;
+    font-size: 22px;
+    margin-bottom: 18px;
+
+}
+
+
+/* BUTTON */
+
+.food-info button{
+
+    background: #ffb400;
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+
+}
+
+
+.food-info button:hover{
+
+    background: white;
+
+}

@@ -1,24 +1,40 @@
-let lastOrdersData = "";
-async function fetchOrders() {
+const socket = io("http://localhost:5000");
+
+let lastOrderCount = 0;
+
+// ===== FETCH ORDERS =====
+
+async function fetchOrders(playSound = false) {
 
     const response =
     await fetch("/api/orders");
 
     const orders = await response.json();
-const currentData =
-JSON.stringify(orders);
-const notifySound =
-new Audio("sounds/notification.mp3");
-if(currentData === lastOrdersData){
-    notifySound.play();
-    
-}
 
-lastOrdersData = currentData;
+    // ===== PLAY SOUND ONLY NEW ORDER =====
+
+    const groupedCheckouts =
+    [...new Set(
+        orders.map(order => order.checkout_id)
+    )];
+
+    if(
+        playSound &&
+        groupedCheckouts.length > lastOrderCount
+    ){
+
+        const notifySound =
+        new Audio("sounds/notification.mp3");
+
+        notifySound.play();
+
+    }
+
+    lastOrderCount =
+    groupedCheckouts.length;
+
     const container =
     document.getElementById("ordersContainer");
-
-    
 
     // ===== STATS =====
 
@@ -56,7 +72,7 @@ lastOrdersData = currentData;
         "deliveredOrders"
     ).innerText = delivered;
 
-    // ===== GROUP ORDERS =====
+    // ===== GROUP =====
 
     const grouped = {};
 
@@ -69,17 +85,11 @@ lastOrdersData = currentData;
             grouped[key] = {
 
                 checkout_id: key,
-
                 customer: order.user_name,
-
                 table: order.table_no,
-
                 status: order.status,
-
                 time: order.created_at,
-
                 total: 0,
-
                 items: []
 
             };
@@ -89,130 +99,154 @@ lastOrdersData = currentData;
         grouped[key].items.push({
 
             food: order.food_name,
-
-            qty: order.quantity,
-
-            price: order.price
+            qty: order.quantity
 
         });
 
         grouped[key].total += Number(order.total);
 
     });
-container.innerHTML = "";
-    // ===== DISPLAY =====
 
-    Object.values(grouped)
-    
-    .forEach(order => {
+    // ===== RENDER =====
 
-        const div =
-        document.createElement("div");
+    Object.values(grouped).forEach(order => {
 
-        div.classList.add("order-card");
+        let card =
+        document.querySelector(
+            `[data-checkout="${order.checkout_id}"]`
+        );
 
-        div.innerHTML = `
+        // ===== CREATE ONLY ONCE =====
 
-            <h3>
-                🍽 Order
-            </h3>
+        if(!card){
 
-            <p>
-            <strong>Customer:</strong>
-            ${order.customer}
-            </p>
+            card =
+            document.createElement("div");
 
-            <p>
-            <strong>Table:</strong>
-            ${order.table || "-"}
-            </p>
+            card.className =
+            "order-card";
 
-<p>
-<strong>Time:</strong>
-${
-!isNaN(new Date(order.time))
-? new Date(order.time).toLocaleString()
-: "Recently"
-}
-</p>
+            card.setAttribute(
+                "data-checkout",
+                order.checkout_id
+            );
 
-            <div class="admin-items">
+            card.innerHTML = `
 
-                ${order.items.map(item => `
+                <h3>🍽 Order</h3>
 
-                    <div class="food-row">
+                <p class="customer"></p>
 
-                        <span>
-                            ${item.food}
-                        </span>
+                <p class="table"></p>
 
-                        <span>
-                            x${item.qty}
-                        </span>
+                <p class="time"></p>
 
-                    </div>
+                <div class="admin-items"></div>
 
-                `).join("")}
+                <p class="grand-total"></p>
+
+                <div class="status-buttons">
+
+                    <button class="status-btn pending-btn">
+                    Pending
+                    </button>
+
+                    <button class="status-btn preparing-btn">
+                    Preparing
+                    </button>
+
+                    <button class="status-btn ready-btn">
+                    Ready
+                    </button>
+
+                    <button class="status-btn delivered-btn">
+                    Delivered
+                    </button>
+
+                </div>
+
+            `;
+
+            container.prepend(card);
+
+        }
+
+        // ===== UPDATE CONTENT =====
+
+        card.querySelector(".customer")
+        .innerHTML =
+        `<strong>Customer:</strong> ${order.customer}`;
+
+        card.querySelector(".table")
+        .innerHTML =
+        `<strong>Table:</strong> ${order.table || "-"}`;
+
+        card.querySelector(".time")
+        .innerHTML =
+        `<strong>Time:</strong>
+        ${
+        !isNaN(new Date(order.time))
+        ? new Date(order.time).toLocaleString()
+        : "Recently"
+        }`;
+
+        // ===== ITEMS =====
+
+        const itemsHTML =
+        order.items.map(item => `
+
+            <div class="food-row">
+
+                <span>${item.food}</span>
+
+                <span>x${item.qty}</span>
 
             </div>
 
-            <p class="grand-total">
+        `).join("");
 
-                Total: ₹${order.total}
+        card.querySelector(".admin-items")
+        .innerHTML = itemsHTML;
 
-            </p>
+        // ===== TOTAL =====
 
-<div class="status-buttons">
+        card.querySelector(".grand-total")
+        .innerHTML =
+        `Total: ₹${order.total}`;
 
-<button
-class="status-btn pending-btn ${order.status === 'Pending' ? 'active-status' : ''}"
-onclick="
-updateStatusByCheckout(
-'${order.checkout_id}',
-'Pending'
-)"
->
-Pending
-</button>
+        // ===== BUTTONS =====
 
-<button
-class="status-btn preparing-btn ${order.status === 'Preparing' ? 'active-status' : ''}"
-onclick="
-updateStatusByCheckout(
-'${order.checkout_id}',
-'Preparing'
-)"
->
-Preparing
-</button>
+        const buttons =
+        card.querySelectorAll(".status-btn");
 
-<button
-class="status-btn ready-btn ${order.status === 'Ready' ? 'active-status' : ''}"
-onclick="
-updateStatusByCheckout(
-'${order.checkout_id}',
-'Ready'
-)"
->
-Ready
-</button>
+        buttons.forEach(btn => {
 
-<button
-class="status-btn delivered-btn ${order.status === 'Delivered' ? 'active-status' : ''}"
-onclick="
-updateStatusByCheckout(
-'${order.checkout_id}',
-'Delivered'
-)"
->
-Delivered
-</button>
+            btn.classList.remove(
+                "active-status"
+            );
 
-</div>
+            if(
+                btn.innerText.trim() ===
+                order.status
+            ){
 
-        `;
+                btn.classList.add(
+                    "active-status"
+                );
 
-        container.appendChild(div);
+            }
+
+            btn.onclick = () => {
+
+                updateStatusByCheckout(
+                    order.checkout_id,
+                    btn.innerText.trim(),
+                    card
+                );
+
+            };
+
+        });
 
     });
 
@@ -222,8 +256,34 @@ Delivered
 
 async function updateStatusByCheckout(
 checkoutId,
-status
+status,
+card
 ){
+
+    // ===== SMOOTH BUTTON MOVE =====
+
+    const buttons =
+    card.querySelectorAll(".status-btn");
+
+    buttons.forEach(btn => {
+
+        btn.classList.remove(
+            "active-status"
+        );
+
+        if(
+            btn.innerText.trim() === status
+        ){
+
+            btn.classList.add(
+                "active-status"
+            );
+
+        }
+
+    });
+
+    // ===== API =====
 
     await fetch(
 
@@ -243,67 +303,22 @@ status
 
     );
 
-    fetchOrders();
-
 }
 
-fetchOrders();
+// ===== INITIAL =====
 
-// ===== DASHBOARD SCROLL =====
+fetchOrders(false);
 
-document.getElementById(
-    "dashboardBtn"
-).addEventListener("click", () => {
+// ===== SOCKET =====
 
-    document.getElementById(
-        "dashboardSection"
-    ).scrollIntoView({
-        behavior:"smooth"
-    });
+socket.on("new-order", () => {
+
+    fetchOrders(true);
 
 });
 
-// ===== ORDERS SCROLL =====
+socket.on("status-updated", () => {
 
-document.getElementById(
-    "ordersBtn"
-).addEventListener("click", () => {
-
-    document.getElementById(
-        "ordersSection"
-    ).scrollIntoView({
-        behavior:"smooth"
-    });
+    fetchOrders(false);
 
 });
-
-// ===== REVENUE =====
-
-document.getElementById(
-    "revenueBtn"
-).addEventListener("click", () => {
-
-    document.getElementById(
-        "dashboardSection"
-    ).scrollIntoView({
-        behavior:"smooth"
-    });
-
-});
-
-// ===== SETTINGS =====
-
-document.getElementById(
-    "settingsBtn"
-).addEventListener("click", () => {
-
-    alert("Settings Feature Coming Soon 🚀");
-
-});
-// 🔥 AUTO LIVE REFRESH
-
-setInterval(() => {
-
-    fetchOrders();
-
-}, 8000);
