@@ -4,7 +4,7 @@ pipeline {
 
     stages {
 
-        stage('Clone Repository') {
+        stage('Clone') {
 
             steps {
 
@@ -15,31 +15,21 @@ pipeline {
 
         }
 
-        stage('Stop Old Containers') {
+        stage('Docker Down') {
 
             steps {
 
-                sh 'docker-compose down'
+                bat 'docker compose down'
 
             }
 
         }
 
-        stage('Build Containers') {
+        stage('Docker Build') {
 
             steps {
 
-                sh 'docker-compose up --build -d'
-
-            }
-
-        }
-
-        stage('Show Running Containers') {
-
-            steps {
-
-                sh 'docker ps'
+                bat 'docker compose up --build -d'
 
             }
 
