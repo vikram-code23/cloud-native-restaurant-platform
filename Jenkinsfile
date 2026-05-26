@@ -19,7 +19,7 @@ pipeline {
 
             steps {
 
-                sh 'docker compose down'
+                sh 'docker-compose down'
 
             }
 
@@ -29,7 +29,7 @@ pipeline {
 
             steps {
 
-                sh 'docker compose up --build -d'
+                sh 'docker-compose up --build -d'
 
             }
 
