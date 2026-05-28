@@ -1,4 +1,4 @@
-const socket = io("http://localhost:5000");
+const socket = io("http://54.252.119.151:5000");
 
 socket.on("status-updated", () => {
 
@@ -17,9 +17,7 @@ async function loadOrders() {
 
     try{
 
-        const res = await fetch(
-            `/api/orders/${user.id}`
-        );
+        const res = await fetch(`http://54.252.119.151:5000/api/orders/${user.id}`);
 
         const data = await res.json();
 

@@ -17,10 +17,9 @@ services:
       - "8081:80"
     depends_on:
       - backend
-    
 
   mysql:
-    image: mysql:8
+    image: mysql:5.7
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -30,9 +29,9 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 volumes:
   mysql_data:

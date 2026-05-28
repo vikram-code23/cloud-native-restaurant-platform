@@ -1,4 +1,4 @@
-const socket = io("http://localhost:5000");
+const socket = io("http://54.252.119.151:5000");
 
 let lastOrderCount = 0;
 
@@ -7,7 +7,7 @@ let lastOrderCount = 0;
 async function fetchOrders(playSound = false) {
 
     const response =
-    await fetch("/api/orders");
+    await fetch("http://54.252.119.151:5000/api/orders")
 
     const orders = await response.json();
 
@@ -35,7 +35,7 @@ async function fetchOrders(playSound = false) {
 
     const container =
     document.getElementById("ordersContainer");
-
+    container.innerHTML = "";
     // ===== STATS =====
 
     document.getElementById(
@@ -260,8 +260,6 @@ status,
 card
 ){
 
-    // ===== SMOOTH BUTTON MOVE =====
-
     const buttons =
     card.querySelectorAll(".status-btn");
 
@@ -283,14 +281,11 @@ card
 
     });
 
-    // ===== API =====
+    // ✅ FIXED FETCH
 
     await fetch(
-
-        `/api/checkout-status/${checkoutId}`,
-
+        `http://54.252.119.151:5000/api/checkout-status/${checkoutId}`,
         {
-
             method:"PUT",
 
             headers:{
@@ -298,9 +293,7 @@ card
             },
 
             body:JSON.stringify({status})
-
         }
-
     );
 
 }
