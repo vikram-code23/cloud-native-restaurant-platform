@@ -44,7 +44,7 @@
 
         <h1>VIKRAM VK RESTAURANT</h1>
 
-        <p id="typing-text">
+        <p id="typingText">
 Every Bite Feels Like Home ✨
 </p>
 
@@ -114,11 +114,16 @@ let index = 0;
 
 function typeEffect(){
 
+    const el =
+    document.getElementById("typingText");
+
+    if(!el){
+        return;
+    }
+
     if(index < text.length){
 
-        document.getElementById(
-            "typingText"
-        ).innerHTML += text.charAt(index);
+        el.innerHTML += text.charAt(index);
 
         index++;
 
@@ -127,7 +132,6 @@ function typeEffect(){
     }
 
 }
-
 typeEffect();
 
 </script>
