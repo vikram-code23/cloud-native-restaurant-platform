@@ -1371,7 +1371,7 @@ Displays all application tables.
 Connect to EC2 Instance
 
 ```bash
-ssh -i "C:\Users\VIKRAM (VK)\Downloads\vk-key.pem" ubuntu@54.252.119.151
+ssh -i "path/to/key.pem" ubuntu@PUBLIC-IP
 ```
 
 Purpose:
@@ -1681,11 +1681,90 @@ Confirms storage recovery after cleanup activities.
 
 ---
 
+# Final Environment Verification
+
+Before application deployment and EC2 shutdown, the following verification steps were performed.
+
+---
+
+## Verify Disk Space
+
+```bash
+df -h
+```
+
+Purpose:
+
+Verified sufficient storage availability for Docker images, containers, Jenkins workspace, and Kubernetes resources.
+
+---
+
+## Verify Memory Usage
+
+```bash
+free -h
+```
+
+Purpose:
+
+Verified available system memory and swap usage.
+
+---
+
+## Verify Docker Resource Usage
+
+```bash
+docker system df
+```
+
+Purpose:
+
+Checked Docker image, container, volume, and build cache utilization.
+
+---
+
+## Verify Running Containers
+
+```bash
+docker ps
+```
+
+Purpose:
+
+Confirmed frontend, backend, and MySQL containers were running correctly.
+
+---
+
+## Verify Kubernetes Resources
+
+```bash
+kubectl get pods
+kubectl get svc
+kubectl get deployments
+```
+
+Purpose:
+
+Verified cluster health and application availability.
+
+---
+
+## Verify Jenkins Availability
+
+```bash
+systemctl status jenkins
+```
+
+Purpose:
+
+Confirmed CI/CD service availability.
+
+---
 # Project Screenshots
 
 ## Application Home Page
 
-![Application Home Page](screenshots/homepage.png)
+![Application Home Page](screenshots/home-page.png)
 
 Description:
 
@@ -1695,7 +1774,7 @@ Customer landing page displaying restaurant interface.
 
 ## Menu Page
 
-![Menu Page](screenshots/menu.png)
+![Menu Page](screenshots/menu-categories.png)
 
 Description:
 
@@ -1705,7 +1784,8 @@ Displays food categories, menu items, and pricing.
 
 ## Cart and Checkout
 
-![Cart and Checkout](screenshots/checkout.png)
+![Cart and Checkout](screenshots/cart-placed-page.png)
+![Cart and Checkout](screenshots/cart-page.png)
 
 Description:
 
@@ -1755,7 +1835,7 @@ Successful CI/CD pipeline execution.
 
 ## Kubernetes Deployments
 
-![Kubernetes](screenshots/kubernetes.png)
+![Kubernetes](screenshots/kubernetes-pods.png)
 
 Description:
 
