@@ -76,6 +76,46 @@ kubectl apply -f k8s/
 
 ## Screenshots
 
+## Screenshots
+
+### Home Page
+![Home](screenshots/home-page.png)
+
+### Login Page
+![Login](screenshots/login-page.png)
+
+### Signup Page
+![Signup](screenshots/signup-page.png)
+
+### Menu Categories
+![Menu Categories](screenshots/menu-categories.png)
+![Menu Categories](screenshots/menu-categories2.png)
+
+### Menu Items
+![Menu Items](screenshots/menu-items.png)
+![Menu Items](screenshots/menu-items-cart-msg.png)
+
+### Cart
+![Cart](screenshots/cart-page.png)
+
+### Order Placed
+![Order Placed](screenshots/cart-placed-page.png)
+
+### Order Tracking
+![Order Tracking](screenshots/order-tracking.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### Jenkins CI/CD
+![Jenkins](screenshots/jenkins-success.png)
+
+### Kubernetes Pods
+![Kubernetes](screenshots/kubernetes-pods.png)
+
+### Docker Containers
+![Docker](screenshots/docker-containers.png)
+
 ## Future Enhancements
 
 - Monitoring with Prometheus
