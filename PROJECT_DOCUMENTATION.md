@@ -816,6 +816,352 @@ Throughout the project implementation, the following practical skills were devel
 
 ---
 
+## Issue 8: Docker Port Binding Conflict
+
+### Problem
+
+Application containers failed to start.
+
+Error:
+
+```text
+Bind for 0.0.0.0:3306 failed
+Port is already allocated
+```
+
+### Root Cause
+
+MySQL port was already occupied by another running container or service.
+
+### Solution
+
+Verified running containers.
+
+Commands:
+
+```bash
+docker ps
+docker-compose down
+docker-compose up -d
+```
+
+Removed conflicting containers and restarted the stack.
+
+### Result
+
+Application services started successfully.
+
+---
+
+## Issue 9: Backend Container Crash Loop
+
+### Problem
+
+Backend container continuously restarted after deployment.
+
+### Root Cause
+
+Environment variables were missing during container startup.
+
+### Solution
+
+Created required .env variables through Jenkins pipeline before deployment.
+
+Verified container logs.
+
+Command:
+
+```bash
+docker logs <container-id>
+```
+
+### Result
+
+Backend service started successfully and connected to MySQL.
+
+---
+
+## Issue 10: Jenkins Workspace Disk Full
+
+### Problem
+
+Jenkins builds started failing unexpectedly.
+
+Error:
+
+```text
+No space left on device
+```
+
+### Root Cause
+
+Old build artifacts and Docker images consumed available disk space.
+
+### Solution
+
+Verified storage utilization.
+
+Commands:
+
+```bash
+df -h
+du -sh ~/.jenkins
+docker system df
+```
+
+Performed cleanup.
+
+```bash
+docker system prune -a -f
+rm -rf ~/.jenkins/workspace/*
+```
+
+### Result
+
+Disk space was recovered and Jenkins builds resumed successfully.
+
+---
+
+## Issue 11: EC2 Storage Exhaustion
+
+### Problem
+
+Application deployment and Docker builds failed due to insufficient storage.
+
+### Root Cause
+
+Unused Docker images, volumes, and build cache consumed EC2 storage.
+
+### Solution
+
+Identified large storage consumers.
+
+Commands:
+
+```bash
+df -h
+du -sh *
+docker system df
+```
+
+Removed unused Docker resources.
+
+```bash
+docker image prune -a -f
+docker volume prune -f
+docker system prune -a -f
+```
+
+### Result
+
+Storage utilization returned to normal levels.
+
+---
+
+## Issue 12: Jenkins tmpfs Memory Allocation Issue
+
+### Problem
+
+Jenkins operations became unstable due to insufficient temporary filesystem allocation.
+
+### Root Cause
+
+Default tmpfs allocation was not sufficient for build operations.
+
+### Solution
+
+Verified tmpfs allocation.
+
+Command:
+
+```bash
+df -h | grep tmpfs
+```
+
+Adjusted tmpfs allocation to provide additional temporary storage capacity.
+
+### Result
+
+Jenkins builds executed reliably without temporary storage issues.
+
+---
+
+## Issue 13: Kubernetes Pods Not Reflecting Latest Changes
+
+### Problem
+
+Frontend and backend updates were not visible after successful builds.
+
+### Root Cause
+
+Kubernetes deployments continued using old running pods.
+
+### Solution
+
+Reloaded images into Kind cluster and restarted deployments.
+
+Commands:
+
+```bash
+kind load docker-image vk-food-cicd-frontend:latest --name vk-cluster
+kind load docker-image vk-food-cicd-backend:latest --name vk-cluster
+
+kubectl rollout restart deployment/frontend
+kubectl rollout restart deployment/backend
+```
+
+### Result
+
+Latest application updates became available immediately.
+
+---
+
+## Issue 14: Admin Dashboard Real-Time Notification Problems
+
+### Problem
+
+Notification sound triggered repeatedly during page refreshes.
+
+### Root Cause
+
+Socket events were firing multiple times due to repeated client-side event registration.
+
+### Solution
+
+Reviewed Socket.IO event flow and optimized event listener logic.
+
+Verified:
+
+```javascript
+socket.emit()
+socket.on()
+```
+
+### Result
+
+Notification sounds triggered only for new order events.
+
+---
+
+## Issue 15: Order Status Synchronization Issues
+
+### Problem
+
+Customer and admin pages displayed inconsistent order status information.
+
+### Root Cause
+
+Order update events were not being synchronized correctly between frontend and backend.
+
+### Solution
+
+Verified:
+
+* API responses
+* Database updates
+* Socket.IO events
+* Order lifecycle workflow
+
+Checked backend logs.
+
+```bash
+kubectl logs deployment/backend
+```
+
+### Result
+
+Order status updates synchronized correctly across all interfaces.
+
+---
+
+## Issue 16: AWS Security Group Configuration Issues
+
+### Problem
+
+Application services were inaccessible from the internet.
+
+### Root Cause
+
+Required ports were not opened in AWS Security Groups.
+
+### Solution
+
+Configured inbound rules for:
+
+* Port 22 (SSH)
+* Port 80 (HTTP)
+* Port 8080 (Jenkins)
+* Port 5000 (Backend API)
+* NodePort Services
+
+### Result
+
+All application components became externally accessible.
+
+---
+
+## Issue 17: Jenkins Startup and Accessibility Issues
+
+### Problem
+
+Jenkins dashboard was not accessible after server restart.
+
+### Root Cause
+
+Jenkins process was not running.
+
+### Solution
+
+Started Jenkins manually.
+
+Command:
+
+```bash
+java -jar ~/jenkins.war --httpPort=8080
+```
+
+Verified accessibility.
+
+```text
+http://PUBLIC-IP:8080
+```
+
+### Result
+
+Jenkins dashboard became available and CI/CD operations resumed.
+
+---
+
+## Issue 18: MySQL Data Verification and Troubleshooting
+
+### Problem
+
+Application functionality required database-level validation.
+
+### Root Cause
+
+Need to verify data insertion, tables, and records.
+
+### Solution
+
+Connected directly to MySQL.
+
+Commands:
+
+```bash
+docker exec -it cloud-native-restaurant-platform-mysql-1 mysql -uroot -proot
+
+SHOW DATABASES;
+USE vk_restaurant;
+SHOW TABLES;
+```
+
+### Result
+
+Database records were verified successfully and application data integrity was confirmed.
+
+---
+
 # Important Commands Used During Implementation
 
 ## Docker Commands
