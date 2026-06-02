@@ -47,10 +47,32 @@ DevOps
 cloud-native-restaurant-platform
 │
 ├── frontend/
+│   ├── admin.html
+│   ├── orders.html
+│   ├── menu.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── admin.js
+│   ├── images/
+│   └── Dockerfile
+│
 ├── backend/
+│   ├── server.js
+│   ├── db.js
+│   ├── package.json
+│   └── Dockerfile
+│
 ├── k8s/
-├── docker-compose.yml
+│   ├── frontend-deployment.yaml
+│   ├── frontend-service.yaml
+│   ├── backend-deployment.yaml
+│   ├── backend-service.yaml
+│   ├── mysql-deployment.yaml
+│   └── mysql-service.yaml
+│
 ├── Jenkinsfile
+├── docker-compose.yml
+├── vk_restaurant.sql
 └── README.md
 ```
 
